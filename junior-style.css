@@ -1,0 +1,187 @@
+/* การตั้งค่า Font และรากของสี */
+:root {
+    --primary: #4f46e5;
+    --primary-hover: #4338ca;
+    --bg-color: #f1f5f9;
+    --card-bg: #ffffff;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+    --senior-accent: #6366f1;
+}
+
+body {
+    font-family: 'Kanit', sans-serif;
+    background-color: var(--bg-color);
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    color: var(--text-main);
+}
+
+.container {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+}
+
+/* สไตล์ของการ์ดหลัก */
+.card {
+    background: var(--card-bg);
+    padding: 2.5rem 2rem;
+    border-radius: 1.5rem;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    text-align: center;
+    border: 1px solid var(--border-color);
+}
+
+/* ส่วนไอคอนและหัวข้อหน้า Login */
+.brand-icon {
+    font-size: 3.5rem;
+    color: var(--primary);
+    margin-bottom: 1rem;
+}
+
+h1 { font-size: 1.5rem; margin-bottom: 0.5rem; font-weight: 600; }
+h2 { font-size: 1.25rem; margin: 0; }
+h3 { font-size: 1.15rem; margin-top: 0.5rem; }
+
+p { font-size: 0.95rem; color: var(--text-muted); }
+
+/* ส่วนการกรอกข้อมูล */
+.input-box {
+    margin: 1.5rem 0;
+}
+
+.input-box input {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 1.5px solid var(--border-color);
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    text-align: center;
+    transition: all 0.2s;
+    background-color: #f8fafc;
+}
+
+.input-box input:focus {
+    outline: none;
+    border-color: var(--primary);
+    background-color: #fff;
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 0.8rem;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+}
+
+/* ส่วนโปรไฟล์ของน้อง */
+.junior-profile {
+    padding-bottom: 0.5rem;
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.35rem 0.8rem;
+    border-radius: 2rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-top: 0.5rem;
+}
+
+/* ส่วนพี่รหัส (Senior Display) */
+.status-badge {
+    display: inline-block;
+    background-color: #eef2ff;
+    color: #4338ca;
+    padding: 0.4rem 1.2rem;
+    border-radius: 2rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.img-container {
+    width: 110px;
+    height: 110px;
+    margin: 1rem auto;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.alias-text {
+    color: var(--senior-accent);
+    font-weight: 500;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+/* การ์ดช่องทางติดต่อ */
+.contact-card {
+    background-color: #f8fafc;
+    border-radius: 1rem;
+    padding: 1rem;
+    text-align: left;
+    border: 1px solid #f1f5f9;
+}
+
+.contact-card small {
+    display: block;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    margin-bottom: 0.2rem;
+}
+
+.contact-card p {
+    margin: 0;
+    color: var(--text-main);
+    font-weight: 500;
+    word-break: break-all;
+}
+
+/* ปุ่มออกจากระบบ */
+.btn-secondary {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+/* Utility Classes */
+.d-none { display: none !important; }
+.fade-in { animation: fadeIn 0.4s ease-out; }
+.mb-4 { margin-bottom: 1.5rem; }
+.mt-4 { margin-top: 1.5rem; }
+.mt-3 { margin-top: 1rem; }
+.py-4 { padding-top: 1.5rem; padding-bottom: 1.5rem; }
+.text-warning { color: #f59e0b; }
+.my-4 { border: 0; border-top: 1px solid var(--border-color); margin: 1.5rem 0; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
