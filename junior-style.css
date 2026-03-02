@@ -1,78 +1,442 @@
-/* =========================================
-   Global Setup & Variables
-   ========================================= */
+/* --- Variables & Core Setup --- */
 :root {
     --primary: #6366f1;
-    --primary-glow: rgba(99, 102, 241, 0.5);
-    --secondary: #a855f7;
-    --dark-bg: #0f172a;
-    --card-bg: rgba(30, 41, 59, 0.7);
+    --primary-light: #818cf8;
+    --secondary: #f43f5e;
+    --accent: #fbbf24;
+    --bg-dark: #0f172a;
+    --glass-bg: rgba(255, 255, 255, 0.05);
     --glass-border: rgba(255, 255, 255, 0.1);
     --text-main: #f8fafc;
     --text-muted: #94a3b8;
-    --fb-color: #1877F2;
-    --ig-color: #E4405F;
-    --transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    --font-kanit: 'Kanit', sans-serif;
 }
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Kanit', sans-serif;
 }
 
 body {
-    background: var(--dark-bg);
-    background-image:
-        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.15) 0px, transparent 50%);
+    font-family: var(--font-kanit);
+    background-color: var(--bg-dark);
+    color: var(--text-main);
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--text-main);
     overflow-x: hidden;
     padding: 20px;
 }
 
-/* Background Animation */
-body::before {
-    content: "";
+/* --- Animated Background Blobs --- */
+.bg-animations {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
-    opacity: 0.05;
     z-index: -1;
-}
-
-/* =========================================
-   Reusable Components
-   ========================================= */
-.container {
-    width: 100%;
-    max-width: 480px;
-    z-index: 1;
-}
-
-.card {
-    background: var(--card-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid var(--glass-border);
-    border-radius: 28px;
-    padding: 40px 30px;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    text-align: center;
-    position: relative;
+    filter: blur(80px);
     overflow: hidden;
 }
 
-/* Animations */
-@keyframes fadeInUp {
+.blob {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: var(--primary);
+    border-radius: 50%;
+    opacity: 0.3;
+    animation: move 20s infinite alternate;
+}
+
+.blob:nth-child(2) {
+    background: var(--secondary);
+    width: 400px;
+    height: 400px;
+    left: 50%;
+    animation-duration: 15s;
+}
+
+.blob:nth-child(3) {
+    background: #4f46e5;
+    width: 250px;
+    height: 250px;
+    bottom: 10%;
+    right: 10%;
+    animation-duration: 25s;
+}
+
+@keyframes move {
+    from {
+        transform: translate(-10%, -10%);
+    }
+
+    to {
+        transform: translate(20%, 30%);
+    }
+}
+
+/* --- Container & Cards --- */
+.container {
+    width: 100%;
+    max-width: 460px;
+    perspective: 1000px;
+}
+
+.card {
+    background: rgba(30, 41, 59, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 32px;
+    padding: 40px 30px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.4s ease;
+}
+
+/* --- Login Styles --- */
+.brand-wrapper {
+    position: relative;
+    width: fit-content;
+    margin: 0 auto 25px;
+}
+
+.brand-icon {
+    font-size: 3.5rem;
+    background: linear-gradient(135deg, #fff 0%, var(--primary-light) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    position: relative;
+    z-index: 2;
+}
+
+.brand-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80px;
+    height: 80px;
+    background: var(--primary);
+    filter: blur(25px);
+    opacity: 0.5;
+    z-index: 1;
+    animation: pulse 3s infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 0.4;
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    50% {
+        opacity: 0.7;
+        transform: translate(-50%, -50%) scale(1.2);
+    }
+}
+
+h1 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
+}
+
+/* Input Styles */
+.input-group {
+    margin: 30px 0;
+}
+
+.input-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-box i {
+    position: absolute;
+    left: 20px;
+    color: var(--primary-light);
+}
+
+.input-box input {
+    width: 100%;
+    background: rgba(15, 23, 42, 0.6);
+    border: 2px solid var(--glass-border);
+    border-radius: 18px;
+    padding: 18px 20px 18px 55px;
+    color: white;
+    font-family: var(--font-kanit);
+    font-size: 1.1rem;
+    transition: 0.4s;
+}
+
+.input-box input:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: rgba(15, 23, 42, 0.9);
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+}
+
+/* Buttons */
+.btn-primary {
+    width: 100%;
+    background: linear-gradient(135deg, var(--primary) 0%, #4338ca 100%);
+    color: white;
+    border: none;
+    padding: 18px;
+    border-radius: 18px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4);
+}
+
+.btn-primary:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 20px 30px -5px rgba(99, 102, 241, 0.5);
+}
+
+.btn-primary i {
+    transition: 0.3s;
+}
+
+.btn-primary:hover i {
+    transform: translateX(5px);
+}
+
+/* --- Result Section Styles --- */
+.welcome-text {
+    letter-spacing: 3px;
+    font-size: 0.75rem;
+    color: var(--primary-light);
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.display-name {
+    font-size: 2.2rem;
+    margin-bottom: 15px;
+    text-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.id-tag {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 6px 16px;
+    border-radius: 100px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    border: 1px solid var(--glass-border);
+}
+
+/* Junior Contact Card */
+.junior-contact-card {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 24px;
+    padding: 20px;
+    margin: 25px 0;
+    border: 1px solid var(--glass-border);
+}
+
+.contact-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.btn-edit-glow {
+    background: rgba(99, 102, 241, 0.1);
+    border: 1px solid var(--primary);
+    color: var(--primary-light);
+    padding: 6px 14px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-edit-glow:hover {
+    background: var(--primary);
+    color: white;
+}
+
+/* Contact Buttons */
+.premium-contact-btn {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border-radius: 16px;
+    text-decoration: none;
+    color: white;
+    margin-bottom: 10px;
+    transition: 0.3s ease;
+}
+
+.premium-contact-btn:hover {
+    transform: scale(1.02);
+    filter: brightness(1.2);
+}
+
+.fb-gradient {
+    background: linear-gradient(90deg, #1877F2, #0056b3);
+}
+
+.ig-gradient {
+    background: linear-gradient(90deg, #833AB4, #FD1D1D, #FCAF45);
+}
+
+.icon-wrap {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    font-size: 1.2rem;
+}
+
+.text-wrap {
+    flex-grow: 1;
+    text-align: left;
+}
+
+.text-wrap .label {
+    font-size: 0.7rem;
+    opacity: 0.8;
+    display: block;
+}
+
+.text-wrap .value {
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+/* Timeline */
+.code-line-timeline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 35px 0;
+}
+
+.timeline-step {
+    text-align: center;
+    flex: 1;
+}
+
+.icon-pulse {
+    width: 55px;
+    height: 55px;
+    background: var(--glass-bg);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 10px;
+    border: 2px solid var(--glass-border);
+    color: var(--text-muted);
+}
+
+.timeline-step.active .icon-pulse {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary-light);
+    box-shadow: 0 0 20px var(--primary);
+    animation: iconPulse 2s infinite;
+}
+
+@keyframes iconPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 15px rgba(99, 102, 241, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+    }
+}
+
+.timeline-connector {
+    height: 2px;
+    flex-grow: 1;
+    background: var(--glass-border);
+    margin: 0 10px;
+    position: relative;
+    top: -15px;
+}
+
+/* Senior Card */
+.senior-card-modern {
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.1) 0%, rgba(0, 0, 0, 0.4) 100%);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    border-radius: 24px;
+    padding: 30px 20px;
+    animation: slideUp 0.6s ease-out;
+}
+
+.card-status-header {
+    color: var(--accent);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    margin-bottom: 15px;
+}
+
+.senior-alias-title {
+    color: var(--accent);
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+}
+
+.modern-contact-hint {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
+/* --- Misc & Animations --- */
+.btn-logout {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--glass-border);
+    color: var(--text-muted);
+    padding: 12px;
+    border-radius: 15px;
+    margin-top: 30px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-logout:hover {
+    background: rgba(244, 63, 94, 0.1);
+    color: var(--secondary);
+    border-color: var(--secondary);
+}
+
+.fade-in {
+    animation: fadeIn 0.8s ease-out forwards;
+}
+
+@keyframes fadeIn {
     from {
         opacity: 0;
         transform: translateY(30px);
@@ -84,330 +448,31 @@ body::before {
     }
 }
 
-.fade-in {
-    animation: fadeInUp 0.8s ease-out forwards;
-}
-
-/* =========================================
-   Login Section
-   ========================================= */
-.brand-icon {
-    width: 80px;
-    height: 80px;
-    background: linear-gradient(135deg, var(--primary), var(--secondary));
-    border-radius: 22px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 20px;
-    font-size: 35px;
-    color: white;
-    box-shadow: 0 10px 20px var(--primary-glow);
-    animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-
-    0%,
-    100% {
-        transform: translateY(0);
-    }
-
-    50% {
-        transform: translateY(-10px);
-    }
-}
-
-h1 {
-    font-size: 1.8rem;
-    font-weight: 600;
-    margin-bottom: 8px;
-    letter-spacing: 0.5px;
-}
-
-.input-box {
-    margin: 30px 0 20px;
-    position: relative;
-}
-
-input[type="text"] {
-    width: 100%;
-    padding: 15px 20px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--glass-border);
-    border-radius: 15px;
-    color: white;
-    font-size: 1rem;
-    text-align: center;
-    transition: var(--transition);
-}
-
-input[type="text"]:focus {
-    outline: none;
-    background: rgba(255, 255, 255, 0.1);
-    border-color: var(--primary);
-    box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
-}
-
-.btn-primary {
-    width: 100%;
-    padding: 15px;
-    border: none;
-    border-radius: 15px;
-    background: linear-gradient(135deg, var(--primary), var(--secondary));
-    color: white;
-    font-weight: 600;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: var(--transition);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-.btn-primary:hover {
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 8px 25px var(--primary-glow);
-}
-
-/* =========================================
-   Profile & Contact Section
-   ========================================= */
-.junior-profile h2 {
-    font-size: 2rem;
-    background: linear-gradient(to right, #fff, #a855f7);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.junior-contact-card {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px dashed rgba(255, 255, 255, 0.15);
-    border-radius: 20px;
-    padding: 20px;
-    margin: 20px 0;
-    transition: var(--transition);
-}
-
-.btn-edit-mini {
-    background: rgba(99, 102, 241, 0.1);
-    border: 1px solid var(--primary);
-    color: var(--primary);
-    padding: 6px 14px;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    cursor: pointer;
-    transition: var(--transition);
-}
-
-.btn-edit-mini:hover {
-    background: var(--primary);
-    color: white;
-}
-
-.contact-badge {
-    text-decoration: none;
-    color: white;
-    padding: 10px 18px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    font-weight: 500;
-    animation: slideIn 0.5s ease;
-}
-
-@keyframes slideIn {
+@keyframes slideUp {
     from {
         opacity: 0;
-        transform: scale(0.9);
+        transform: translateY(50px);
     }
 
     to {
         opacity: 1;
-        transform: scale(1);
+        transform: translateY(0);
     }
 }
 
-.fb-bg {
-    background: #1877F2;
-    box-shadow: 0 5px 15px rgba(24, 119, 242, 0.3);
+.waiting-anim i {
+    font-size: 3rem;
+    color: var(--accent);
+    animation: rotate 2s linear infinite;
 }
 
-.ig-bg {
-    background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
-    box-shadow: 0 5px 15px rgba(220, 39, 67, 0.3);
-}
-
-/* =========================================
-   Timeline Area
-   ========================================= */
-.code-line-timeline {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 40px 0;
-    position: relative;
-}
-
-.code-line-timeline::before {
-    content: "";
-    position: absolute;
-    top: 25px;
-    left: 10%;
-    width: 80%;
-    height: 2px;
-    background: rgba(255, 255, 255, 0.05);
-    z-index: 0;
-}
-
-.timeline-step {
-    position: relative;
-    z-index: 1;
-    flex: 1;
-}
-
-.timeline-step .icon {
-    width: 50px;
-    height: 50px;
-    background: #1e293b;
-    border: 2px solid var(--glass-border);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 12px;
-    color: var(--text-muted);
-    transition: var(--transition);
-}
-
-.timeline-step.active .icon {
-    background: var(--primary);
-    color: white;
-    border-color: var(--primary);
-    box-shadow: 0 0 20px var(--primary-glow);
-    transform: scale(1.2);
-}
-
-.timeline-step .label {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-}
-
-.timeline-step .name {
-    font-weight: 500;
-    font-size: 0.9rem;
-}
-
-/* =========================================
-   Senior Card (The Prize)
-   ========================================= */
-.senior-card {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1));
-    border: 1px solid rgba(168, 85, 247, 0.3);
-    border-radius: 24px;
-    padding: 30px;
-    margin-top: 20px;
-    position: relative;
-}
-
-.badge-role {
-    position: absolute;
-    top: -12px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--secondary);
-    padding: 4px 15px;
-    border-radius: 20px;
-    font-size: 0.7rem;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-.alias-text {
-    font-size: 1.8rem;
-    margin: 15px 0;
-    color: #fff;
-    text-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
-}
-
-.social-flex {
-    display: flex;
-    gap: 15px;
-    justify-content: center;
-    margin-top: 20px;
-}
-
-.social-link {
-    background: rgba(255, 255, 255, 0.05);
-    padding: 12px 20px;
-    border-radius: 15px;
-    text-decoration: none;
-    color: white;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    border: 1px solid var(--glass-border);
-    transition: var(--transition);
-}
-
-.social-link:hover {
-    background: rgba(255, 255, 255, 0.1);
-    transform: translateY(-5px);
-}
-
-.fb-link i {
-    color: #1877F2;
-}
-
-.ig-link i {
-    color: #E4405F;
-}
-
-/* =========================================
-   Utility
-   ========================================= */
-.row-hidden {
-    display: none !important;
-}
-
-.d-none {
-    display: none !important;
-}
-
-.btn-secondary {
-    background: transparent;
-    border: 1px solid var(--glass-border);
-    color: var(--text-muted);
-    padding: 10px 20px;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: var(--transition);
-}
-
-.btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: white;
-}
-
-/* =========================================
-   Responsive Design
-   ========================================= */
-@media (max-width: 480px) {
-    .card {
-        padding: 30px 20px;
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
     }
 
-    h1 {
-        font-size: 1.5rem;
-    }
-
-    .junior-profile h2 {
-        font-size: 1.6rem;
-    }
-
-    .alias-text {
-        font-size: 1.4rem;
+    to {
+        transform: rotate(360deg);
     }
 }
 
@@ -415,482 +480,248 @@ input[type="text"]:focus {
     display: none !important;
 }
 
-/* ถ้าอยากให้ค่อยๆ ปรากฏแบบสวยๆ เมื่อเอา d-none ออก */
-.code-line-timeline {
-    transition: opacity 0.5s ease-in-out;
-}
-/* --- Profile Styling --- */
-.display-name {
-    font-size: 2.2rem;
-    background: linear-gradient(135deg, #1e293b 0%, #6366f1 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 5px;
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
 }
 
-.id-tag {
-    background: rgba(99, 102, 241, 0.1);
-    color: #6366f1;
-    padding: 5px 15px;
-    border-radius: 50px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    border: 1px solid rgba(99, 102, 241, 0.2);
+::-webkit-scrollbar-track {
+    background: var(--bg-dark);
 }
 
-/* --- Contact Card --- */
-.junior-contact-card {
-    background: white;
-    border-radius: 28px;
-    padding: 25px;
-    margin-top: 30px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.05);
-    border: 1px solid #f1f5f9;
+::-webkit-scrollbar-thumb {
+    background: var(--glass-border);
+    border-radius: 10px;
 }
 
-.contact-header {
-    margin-bottom: 20px;
-}
-
-.contact-label {
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: #64748b;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.btn-edit-glow {
-    position: relative;
-    background: rgba(99, 102, 241, 0.05);
-    border: 1px solid rgba(99, 102, 241, 0.2);
-    padding: 8px 16px;
-    border-radius: 14px;
-    cursor: pointer;
-    overflow: hidden;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.btn-content {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--primary);
-    font-size: 0.85rem;
-    font-weight: 500;
-    z-index: 1;
-}
-
-.btn-edit-glow:hover {
+::-webkit-scrollbar-thumb:hover {
     background: var(--primary);
-    border-color: var(--primary);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
 }
 
-.btn-edit-glow:hover .btn-content {
-    color: white;
+/* ปรับแต่งตัวเลือก Dropdown (Select) */
+#contact-type-select {
+    appearance: none !important;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236366f1'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 15px center !important;
+    background-size: 18px !important;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
-/* --- Premium Buttons --- */
-.premium-contact-btn {
-    display: flex;
-    align-items: center;
-    padding: 15px 20px;
-    border-radius: 20px;
-    text-decoration: none;
-    color: white !important;
-    position: relative;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+#contact-type-select:focus {
+    border-color: #6366f1 !important;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2) !important;
+    outline: none;
 }
 
-.premium-contact-btn:hover {
-    transform: translateY(-5px) scale(1.02);
+/* ปรับแต่งช่องกรอกข้อมูล (Input) */
+#swal-input-val {
+    transition: all 0.3s ease !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06) !important;
 }
 
-.icon-wrap {
-    width: 45px;
-    height: 45px;
-    background: rgba(255,255,255,0.2);
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.4rem;
-    margin-right: 15px;
+#swal-input-val:focus {
+    border-color: #6366f1 !important;
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.3) !important;
+    background: rgba(15, 23, 42, 0.8) !important;
 }
 
-.text-wrap {
-    display: flex;
-    flex-direction: column;
-    text-align: left;
-    flex-grow: 1;
+/* ปรับแต่งปุ่มใน Swal */
+.swal2-confirm {
+    padding: 12px 30px !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.5px !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4) !important;
 }
 
-.text-wrap .label { font-size: 0.75rem; opacity: 0.8; }
-.text-wrap .value { font-weight: 600; font-size: 1.05rem; }
-
-.fb-gradient { background: linear-gradient(135deg, #1877F2, #0052bd); box-shadow: 0 10px 20px rgba(24, 119, 242, 0.25); }
-.ig-gradient { background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); box-shadow: 0 10px 20px rgba(220, 39, 67, 0.25); }
-
-.arrow-icon { opacity: 0.5; font-size: 0.8rem; }
-
-.btn-add-now {
-    margin-top: 10px;
-    background: none;
-    border: 1px solid var(--primary);
-    color: var(--primary);
-    padding: 4px 15px;
-    border-radius: 50px;
-    font-size: 0.8rem;
-    cursor: pointer;
-    transition: 0.3s;
+.swal2-cancel {
+    color: #94a3b8 !important;
+    font-weight: 400 !important;
 }
 
-.btn-add-now:hover {
-    background: var(--primary);
-    color: white;
+.swal2-cancel:hover {
+    background: transparent !important;
+    color: #f8fafc !important;
+    text-decoration: underline !important;
 }
 
-/* ปรับปรุงหน้าตา Empty State */
+/* ปรับแต่งกรอบ Modal */
+.swal2-popup.rounded-24 {
+    border-radius: 24px !important;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+}
+
+/* Container หลัก */
 .empty-state-text {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 30px 20px;
-    background: rgba(255, 255, 255, 0.4);
-    border: 1px dashed rgba(148, 163, 184, 0.3);
+    background: rgba(30, 41, 59, 0.5); /* สีน้ำเงินเข้มโปร่งแสง */
+    border: 1px dashed rgba(255, 255, 255, 0.1); /* เส้นประล้อมรอบ */
     border-radius: 20px;
+    text-align: center;
+    margin: 15px 0;
+}
+
+/* แอนิเมชันไอคอนผี */
+.empty-icon-anim {
+    font-size: 2.5rem;
     color: #94a3b8;
+    margin-bottom: 15px;
+    animation: floatGhost 3s ease-in-out infinite; /* ใส่แอนิเมชันลอย */
 }
 
-.empty-icon {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-    opacity: 0.5;
+@keyframes floatGhost {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); color: #6366f1; } /* ลอยขึ้นและเปลี่ยนสีเป็นม่วงจางๆ */
 }
 
-/* คลาสสำหรับซ่อนแถวแบบเนียนๆ */
-.row-hidden { display: none !important; }
-
-/* ปรับปรุงหน้าตาช่อง Input ใน SweetAlert */
-.swal2-input {
-    height: 45px !important;
-    font-size: 0.95rem !important;
-    border: 1px solid #e2e8f0 !important;
-    border-radius: 12px !important;
-    box-shadow: none !important;
+/* ข้อความบรรยาย */
+.empty-state-text p {
+    font-size: 0.95rem;
+    color: #94a3b8;
+    margin-bottom: 15px;
+    font-weight: 300;
 }
 
-.swal2-input:focus {
-    border-color: #6366f1 !important;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
+/* ปุ่มเพิ่มข้อมูลตอนนี้ (Modern Style) */
+.btn-add-now {
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); /* ไล่เฉดม่วง-น้ำเงิน */
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    font-family: 'Kanit', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-/* ปรับแต่งปุ่มใน SweetAlert */
-.swal2-confirm {
-    border-radius: 12px !important;
-    padding: 10px 25px !important;
+.btn-add-now:hover {
+    transform: translateY(-3px) scale(1.05); /* เด้งขึ้นเล็กน้อยตอนชี้ */
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+    filter: brightness(1.1);
 }
 
-.swal2-cancel {
-    border-radius: 12px !important;
+.btn-add-now:active {
+    transform: translateY(0) scale(0.95); /* เอฟเฟกต์ตอนกดลงไป */
 }
 
-/* --- Senior Card Modern (Ultra Edition) --- */
-.senior-card-modern {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 35px;
-    overflow: hidden;
-    margin-top: 25px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3), 
-                inset 0 0 20px rgba(255, 255, 255, 0.05);
+/* เพิ่ม Icon Plus หน้าปุ่มผ่าน CSS (ถ้าไม่อยากแก้ HTML) */
+.btn-add-now::before {
+    content: '\f067'; /* FontAwesome Plus */
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    font-size: 0.8rem;
+}
+
+/* Container หลัก */
+.search-wrapper {
+    background: rgba(30, 41, 59, 0.4);
+    backdrop-filter: blur(12px);
+    border-radius: 32px;
+    padding: 40px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* Radar Animation */
+.radar-container {
     position: relative;
-    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-/* ส่วนหัว - Gradient แถบสถานะ */
-.card-status-header {
-    background: linear-gradient(90deg, #6366f1, #a855f7);
-    padding: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-.crown-icon {
-    color: #fbbf24;
-    font-size: 1.2rem;
-    filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.6));
-    animation: crown-bounce 2s infinite;
-}
-
-@keyframes crown-bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-3px); }
-}
-
-.status-text {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: white;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-}
-
-/* เนื้อหาภายใน */
-.senior-content-wrapper {
-    padding: 40px 25px;
-    text-align: center;
-}
-
-.alias-sub {
-    font-size: 0.85rem;
-    color: rgba(255, 255, 255, 0.5);
-    margin-bottom: 8px;
-    letter-spacing: 1px;
-}
-
-/* ชื่อฉายา - ตัวหนาและไล่เฉดสี */
-.senior-alias-title {
-    font-size: 2.2rem;
-    font-weight: 700;
-    margin-bottom: 30px;
-    background: linear-gradient(to right, #fff, #c4b5fd, #fff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 0 15px rgba(168, 85, 247, 0.4));
-}
-
-/* เส้นคั่นกลาง */
-.contact-divider {
-    display: flex;
-    align-items: center;
+    height: 120px;
     margin-bottom: 25px;
 }
 
-.contact-divider::before, .contact-divider::after {
-    content: "";
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent);
+.waiting-anim {
+    font-size: 2.8rem;
+    color: #6366f1; /* Indigo */
+    filter: drop-shadow(0 0 15px rgba(99, 102, 241, 0.5));
+    z-index: 5;
+    animation: floatIcon 3s ease-in-out infinite;
 }
 
-.contact-divider span {
-    padding: 0 15px;
-    font-size: 0.7rem;
-    color: rgba(255, 255, 255, 0.4);
-    text-transform: uppercase;
-    letter-spacing: 2px;
-}
-
-/* ปุ่ม Social - สไตล์ปุ่มกดขนาดใหญ่ */
-.modern-social-btn {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding: 16px 22px;
-    border-radius: 20px;
-    text-decoration: none !important;
-    color: white !important;
-    margin-bottom: 15px;
-    font-weight: 500;
-    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    position: relative;
-    overflow: hidden;
-}
-
-/* แสงวิ่งที่ปุ่มเวลา Hover */
-.modern-social-btn::after {
-    content: "";
+.radar-ring {
     position: absolute;
-    top: 0; left: -100%;
-    width: 100%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-    transition: 0.5s;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 2px solid #6366f1;
+    opacity: 0;
+    animation: radarPulse 3s linear infinite;
 }
 
-.modern-social-btn:hover::after {
-    left: 100%;
-}
+.delay-1 { animation-delay: 1s; }
+.delay-2 { animation-delay: 2s; }
 
-/* สีเฉพาะของแต่ละปุ่ม */
-.fb-btn { 
-    background: rgba(24, 119, 242, 0.1); 
-}
-.fb-btn:hover { 
-    background: #1877f2; 
-    box-shadow: 0 10px 20px rgba(24, 119, 242, 0.4);
-    transform: translateY(-5px) scale(1.02);
-}
-
-.ig-btn { 
-    background: rgba(228, 64, 95, 0.1); 
-}
-.ig-btn:hover { 
-    background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); 
-    box-shadow: 0 10px 20px rgba(220, 39, 67, 0.4);
-    transform: translateY(-5px) scale(1.02);
-}
-
-.modern-social-btn i {
-    font-size: 1.3rem;
-}
-
-.modern-contact-hint {
+/* Status Badge */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981; /* Emerald */
+    padding: 6px 16px;
+    border-radius: 50px;
     font-size: 0.75rem;
-    color: #94a3b8;
-    margin-top: 15px;
-    font-style: italic;
-}
-
-/* Animation ตอนเปิดตัว (Fade In & Slide Up) */
-.fade-in {
-    animation: slideUpFade 0.8s ease-out forwards;
-}
-
-@keyframes slideUpFade {
-    from {
-        opacity: 0;
-        transform: translateY(30px) scale(0.95);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-/* Utility Class */
-.d-none { display: none !important; }
-
-/* Container ปรับระยะห่าง */
-.social-action-list {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-    margin-top: 10px;
-}
-
-/* Base Card สไตล์กระจกมีมิติ */
-.premium-social-card {
-    display: flex;
-    align-items: center;
-    padding: 18px 22px;
-    border-radius: 24px;
-    text-decoration: none !important;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-}
-
-/* กล่อง Icon ฝั่งซ้าย */
-.social-icon-box {
-    width: 54px;
-    height: 54px;
-    border-radius: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    color: white;
-    margin-right: 18px;
-    position: relative;
-    z-index: 2;
-    transition: 0.3s;
-}
-
-/* กล่องข้อความกลาง */
-.social-text-box {
-    display: flex;
-    flex-direction: column;
-    text-align: left;
-    z-index: 2;
-}
-
-.social-platform {
-    font-size: 1.1rem;
     font-weight: 600;
-    color: white;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.pulse-dot {
+    width: 6px;
+    height: 6px;
+    background: #10b981;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #10b981;
+    animation: blink 1.2s infinite;
+}
+
+/* Typography */
+.search-title {
+    font-family: 'Kanit', sans-serif;
+    font-weight: 600;
+    color: #f8fafc;
+    margin-bottom: 10px;
     letter-spacing: 0.5px;
 }
 
-.social-action-text {
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.5);
-    margin-top: 2px;
+.search-subtitle {
+    font-family: 'Kanit', sans-serif;
+    color: #94a3b8;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    font-weight: 300;
 }
 
-/* ลูกศรขวาสุด */
-.social-arrow {
-    margin-left: auto;
-    color: rgba(255, 255, 255, 0.2);
-    transition: 0.3s;
-    font-size: 14px;
+/* --- Animations --- */
+@keyframes radarPulse {
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(3); opacity: 0; }
 }
 
-/* --- สีและเอฟเฟกต์เฉพาะ Facebook --- */
-.fb-card .social-icon-box {
-    background: linear-gradient(135deg, #1877f2, #0a52b3);
-    box-shadow: 0 8px 20px rgba(24, 119, 242, 0.3);
+@keyframes floatIcon {
+    0%, 100% { transform: translateY(0) rotate(0); }
+    50% { transform: translateY(-10px) rotate(5deg); }
 }
 
-.fb-card:hover {
-    border-color: rgba(24, 119, 242, 0.5);
-    background: rgba(24, 119, 242, 0.08);
-    transform: translateY(-5px) scale(1.02);
-}
-
-/* --- สีและเอฟเฟกต์เฉพาะ Instagram --- */
-.ig-card .social-icon-box {
-    background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
-    box-shadow: 0 8px 20px rgba(220, 39, 67, 0.3);
-}
-
-.ig-card:hover {
-    border-color: rgba(228, 64, 95, 0.5);
-    background: rgba(228, 64, 95, 0.08);
-    transform: translateY(-5px) scale(1.02);
-}
-
-/* เอฟเฟกต์ตอน Hover */
-.premium-social-card:hover .social-arrow {
-    transform: translateX(5px);
-    color: white;
-}
-
-.premium-social-card:hover .social-icon-box {
-    transform: rotate(-10deg) scale(1.1);
-}
-
-/* แสงเงาพื้นหลังเวลากด (Glass Sparkle) */
-.premium-social-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 50%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-    transition: 0.6s;
-}
-
-.premium-social-card:hover::before {
-    left: 150%;
-}
-
-.modern-contact-hint {
-    font-size: 0.8rem;
-    color: #8b5cf6;
-    margin-top: 5px;
-    font-weight: 500;
+@keyframes blink {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(1.2); }
 }

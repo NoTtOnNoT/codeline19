@@ -12,95 +12,63 @@
             rel="stylesheet">
         <link rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
         <link rel="stylesheet" href="junior-style.css">
-
-        <style>
-        /* CSS สำหรับจัดการการแสดงผล Contact Card */
-        .junior-contact-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            padding: 15px;
-            margin-top: 15px;
-            border: 1px dashed rgba(255, 255, 255, 0.2);
-            position: relative;
-        }
-
-        /* ใช้ d-none ของ Bootstrap หรือกำหนดเอง */
-        .d-none { display: none !important; }
-        
-        /* สไตล์สำหรับปุ่มแก้ไขข้อมูลแบบ Glow */
-        .btn-edit-glow {
-            background: rgba(99, 102, 241, 0.1);
-            border: 1px solid #6366f1;
-            color: #6366f1;
-            padding: 6px 14px;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-edit-glow:hover {
-            background: #6366f1;
-            color: white;
-            box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
-        }
-
-        .code-line-timeline { margin: 40px 0; display: flex; justify-content: space-between; position: relative; }
-        .timeline-step { flex: 1; text-align: center; z-index: 1; }
-        .timeline-step .icon { width: 50px; height: 50px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; color: #adb5bd; transition: 0.3s; }
-        .timeline-step.active .icon { background: #6366f1; color: white; box-shadow: 0 0 20px rgba(99,102,241,0.5); transform: scale(1.1); }
-    </style>
     </head>
     <body>
+        <div class="bg-animations">
+            <div class="blob"></div>
+            <div class="blob"></div>
+            <div class="blob"></div>
+        </div>
 
         <div class="container">
             <section id="login-section" class="card fade-in">
-                <div class="brand-icon">
-                    <i class="fas fa-user-graduate"></i>
+                <div class="brand-wrapper">
+                    <div class="brand-icon">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <div class="brand-glow"></div>
                 </div>
                 <h1>สายรหัสทับหนึ่ง</h1>
-                <p>กรอกรหัสนักเรียนเพื่อดูข้อมูล</p>
+                <p>กรอกรหัสนักเรียนเพื่อเข้าสู่ระบบ</p>
 
-                <div class="input-box">
-                    <input type="text" id="student-id"
-                        placeholder="รหัสนักเรียนของคุณ" autocomplete="off">
+                <div class="input-group">
+                    <div class="input-box">
+                        <i class="fas fa-fingerprint"></i>
+                        <input type="text" id="student-id"
+                            placeholder="รหัสนักเรียน" autocomplete="off">
+                    </div>
                 </div>
 
-                <button id="btn-search" class="btn-primary">เข้าสู่ระบบ</button>
+                <button id="btn-search" class="btn-primary">
+                    <span>เข้าสู่ระบบ</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
             </section>
 
             <section id="result-section" class="card d-none fade-in">
-
-                <div class="junior-profile mb-4">
+                <div class="junior-profile">
                     <div class="profile-main-info text-center">
-                        <p
-                            class="text-uppercase tracking-wider small text-muted mb-1">ยินดีต้อนรับ</p>
+                        <p class="welcome-text">โปรไฟล์ของ</p>
                         <h2 id="junior-name"
                             class="display-name fw-bold">ชื่อน้องรหัส</h2>
                         <div class="id-badge-wrapper">
-                            <span class="id-tag">STUDENT ID: <span
+                            <span class="id-tag"><i class="fas fa-id-card"></i>
+                                STUDENT ID: <span
                                     id="junior-id-display"></span></span>
                         </div>
                     </div>
 
-                    <div class="junior-contact-card fade-in">
-                        <div
-                            class="contact-header d-flex justify-content-between align-items-center mb-3">
+                    <div class="junior-contact-card">
+                        <div class="contact-header">
                             <span class="contact-label">
-                                <i
-                                    class="fas fa-link me-2 text-primary"></i>ข้อมูลติดต่อของฉัน
+                                <i class="fas fa-share-nodes text-primary"></i>
+                                ข้อมูลการติดต่อของฉัน
                             </span>
                             <button onclick="openEditContact()"
                                 class="btn-edit-glow">
-                                <i class="fas fa-pen-nib"></i>
-                                <span>แก้ไขข้อมูล</span>
+                                <i class="fas fa-pen-nib"></i> แก้ไข
                             </button>
                         </div>
 
@@ -116,7 +84,7 @@
                                             class="value">กำลังโหลด...</span>
                                     </div>
                                     <i
-                                        class="fas fa-chevron-right arrow-icon"></i>
+                                        class="fas fa-external-link-alt arrow-icon"></i>
                                 </a>
                             </div>
 
@@ -131,17 +99,18 @@
                                             class="value">กำลังโหลด...</span>
                                     </div>
                                     <i
-                                        class="fas fa-chevron-right arrow-icon"></i>
+                                        class="fas fa-external-link-alt arrow-icon"></i>
                                 </a>
                             </div>
 
                             <div id="contact-empty-state"
                                 class="empty-state-text">
-                                <div class="empty-icon"><i
-                                        class="fas fa-ghost"></i></div>
+                                <div class="empty-icon-anim">
+                                    <i class="fas fa-ghost"></i>
+                                </div>
                                 <p>ยังไม่ได้ระบุช่องทางการติดต่อ</p>
                                 <button onclick="openEditContact()"
-                                    class="btn-add-now">เพิ่มตอนนี้เลย</button>
+                                    class="btn-add-now">เพิ่มข้อมูลตอนนี้</button>
                             </div>
                         </div>
                     </div>
@@ -149,96 +118,63 @@
 
                 <div id="timeline-area" class="code-line-timeline d-none">
                     <div class="timeline-step">
-                        <div class="icon"><i
+                        <div class="icon-pulse"><i
                                 class="fas fa-user-shield"></i></div>
                         <div class="label">พี่รหัส</div>
-                        <div class="name text-primary"
-                            id="timeline-senior-name">รอออ...</div>
+                        <div class="name"
+                            id="timeline-senior-name">รอการเชื่อมต่อ...</div>
                     </div>
+                    <div class="timeline-connector"></div>
                     <div class="timeline-step active">
-                        <div class="icon"><i class="fas fa-star"></i></div>
-                        <div class="label">ฉัน</div>
+                        <div class="icon-pulse"><i
+                                class="fas fa-star"></i></div>
+                        <div class="label">ตัวฉัน</div>
                         <div class="name" id="timeline-my-name">Me</div>
                     </div>
                 </div>
 
-                <hr class="my-4" style="border-color: rgba(255,255,255,0.1)">
-
-                <div id="senior-container"
-                    class="senior-card-modern d-none fade-in">
+                <div id="senior-container" class="senior-card-modern d-none">
                     <div class="card-status-header">
-                        <div class="crown-icon">
-                            <i class="fas fa-crown"></i>
-                        </div>
-                        <span class="status-text">พี่รหัส</span>
+                        <i class="fas fa-crown"></i>
+                        <span class="status-text">พี่รหัส/1</span>
                     </div>
-
-                    <div class="senior-content-wrapper">
-                        <div class="alias-display-section">
-                            <h2 id="senior-alias"
-                                class="senior-alias-title">"กำลังโหลดชื่อ..."</h2>
-                        </div>
-
-                        <div class="contact-divider">
-                            <span>ช่องทางติดต่อ</span>
-                        </div>
-
-                        <div class="social-action-list">
-                            <a id="link-fb" href="#" target="_blank"
-                                class="premium-social-card fb-card d-none">
-                                <div class="social-icon-box">
-                                    <i class="fab fa-facebook-f"></i>
-                                </div>
-                                <div class="social-text-box">
-                                    <span
-                                        class="social-platform">Facebook</span>
-                                    <span
-                                        class="social-action-text">คลิกเพื่อเปิดโปรไฟล์</span>
-                                </div>
-                                <div class="social-arrow">
-                                    <i class="fas fa-chevron-right"></i>
-                                </div>
-                            </a>
-
-                            <a id="link-ig" href="#" target="_blank"
-                                class="premium-social-card ig-card d-none">
-                                <div class="social-icon-box">
-                                    <i class="fab fa-instagram"></i>
-                                </div>
-                                <div class="social-text-box">
-                                    <span
-                                        class="social-platform">Instagram</span>
-                                    <span
-                                        class="social-action-text">ติดตามพี่รหัสที่นี่</span>
-                                </div>
-                                <div class="social-arrow">
-                                    <i class="fas fa-chevron-right"></i>
-                                </div>
-                            </a>
-
-                            <p id="senior-contact-msg"
-                                class="modern-contact-hint"></p>
-                        </div>
+                    <div class="senior-content-wrapper text-center">
+                        <h2 id="senior-alias"
+                            class="senior-alias-title">"คำใบ้พี่รหัส"</h2>
+                        <div id="senior-contact-msg"
+                            class="modern-contact-hint"></div>
                     </div>
                 </div>
 
-                <div id="no-senior-view" class="d-none py-4 text-center">
-                    <div class="mb-3 text-warning" style="font-size: 50px;">
-                        <i class="fas fa-hourglass-half"></i>
+                <div id="no-senior-view" class="d-none py-5 text-center">
+                    <div class="search-wrapper">
+                        <div class="radar-container">
+                            <div class="radar-ring"></div>
+                            <div class="radar-ring delay-1"></div>
+                            <div class="radar-ring delay-2"></div>
+                            <div class="waiting-anim">
+                                <i class="fas fa-search-location"></i>
+                            </div>
+                        </div>
+
+                        <div class="status-badge">
+                            <span class="pulse-dot"></span>
+                            SYSTEM ACTIVE
+                        </div>
+
+                        <h4 class="search-title">รอจับพี่รหัส...</h4>
+                        <p
+                            class="search-subtitle">พี่รหัสของคุณกำลังนอนอยู่บนดาวอังคาร
+                            <br>โปรดรอสัญญาณจากกองทัพอวกาศ</p>
                     </div>
-                    <h4>ยังไม่พบข้อมูลพี่รหัส</h4>
-                    <p class="text-muted">อดใจรออีกนิดนะ
-                        แอดมินกำลังดำเนินการให้จ้าาาาาา</p>
                 </div>
 
-                <button onclick="location.reload()"
-                    class="btn-secondary mt-5 w-100">
-                    <i class="fas fa-sign-out-alt"></i> ออกจากระบบ
+                <button onclick="location.reload()" class="btn-logout">
+                    <i class="fas fa-power-off"></i> ออกจากระบบ
                 </button>
             </section>
         </div>
 
         <script type="module" src="junior-script.js"></script>
-
     </body>
 </html>
