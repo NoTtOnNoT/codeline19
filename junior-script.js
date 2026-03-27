@@ -240,3 +240,26 @@ function updateJuniorContactUI(fb, ig) {
         emptyState.classList.remove('d-none');
     }
 }
+
+
+// ประกาศฟังก์ชันให้เป็น Global เพื่อให้ HTML มองเห็น
+window.triggerJumpscare = function () {
+    console.log("Jumpscare system: Activated");
+    const overlay = document.getElementById('jumpscare-overlay');
+
+    if (overlay) {
+        // แสดงหน้าจอ Jumpscare
+        overlay.style.display = 'flex';
+        overlay.classList.add('active-jumpscare');
+        document.body.style.overflow = 'hidden'; // กันการไถหน้าจอหนี
+
+        // หายไปเองหลังจาก 2 วินาที
+        setTimeout(() => {
+            overlay.style.display = 'none';
+            overlay.classList.remove('active-jumpscare');
+            document.body.style.overflow = 'auto';
+        }, 2000);
+    } else {
+        console.error("Error: ไม่พบ Element id='jumpscare-overlay'");
+    }
+};
