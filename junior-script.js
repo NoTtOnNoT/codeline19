@@ -40,27 +40,55 @@ document.getElementById('btn-search').addEventListener('click', () => {
 
             updateJuniorContactUI(myData.facebook || "", myData.instagram || "");
 
-            const seniorId = myData.senior_id;
-            if (seniorId && seniorId !== "") {
-                const seniorRef = ref(db, `students/${seniorId}`);
-                onValue(seniorRef, (seniorSnap) => {
-                    if (seniorSnap.exists()) {
-                        const sData = seniorSnap.val();
-                        const aliasName = sData.alias ? `"${sData.alias}"` : "พี่รหัสยังไม่ตั้งฉายา";
-                        document.getElementById('senior-alias').innerText = aliasName;
-                        document.getElementById('timeline-senior-name').innerText = sData.alias || "มีพี่รหัสแล้ว";
+            // --- ส่วนที่แก้ไข: รองรับพี่รหัสหลายคน (เช่น "101, 102") ---
+            const seniorIdRaw = myData.senior_id ? myData.senior_id.toString() : "";
 
-                        const contactMsg = document.getElementById('senior-contact-msg');
-                        if (contactMsg) {
-                            contactMsg.innerText = "สายรหัสทับหนึ่ง";
-                            contactMsg.classList.remove('text-danger');
+            if (seniorIdRaw && seniorIdRaw.trim() !== "") {
+                const seniorIds = seniorIdRaw.split(',').map(id => id.trim());
+                let aliases = [];
+                let loadedCount = 0;
+
+                // ล้างข้อมูลเก่าก่อนแสดงใหม่
+                document.getElementById('senior-alias').innerText = "กำลังดึงข้อมูล...";
+
+                // --- ส่วนที่แก้ไขใน Event 'btn-search' ฝั่งน้องรหัส ---
+                seniorIds.forEach((sId) => {
+                    const seniorRef = ref(db, `students/${sId}`);
+                    onValue(seniorRef, (seniorSnap) => {
+                        loadedCount++;
+                        if (seniorSnap.exists()) {
+                            const sData = seniorSnap.val();
+                            // ตรวจสอบว่ามีฉายาไหม ถ้าไม่มีให้ใส่ข้อความเตือนแทน ID
+                            if (sData.alias && sData.alias.trim() !== "") {
+                                aliases.push(sData.alias);
+                            } else {
+                                aliases.push("พี่รหัสยังไม่ตั้งฉายา(กรุณาโวยวายในกลุ่ม)");
+                            }
+                        } else {
+                            // กรณีหา ID นี้ในระบบไม่เจอ (ป้องกัน Error)
+                            aliases.push("ไม่พบข้อมูลพี่รหัส");
                         }
 
-                        document.getElementById('senior-container').classList.remove('d-none');
-                        document.getElementById('no-senior-view').classList.add('d-none');
-                    }
+                        if (loadedCount === seniorIds.length) {
+                            const fullAliasText = aliases.join(" & ");
+                            document.getElementById('senior-alias').innerText = fullAliasText;
+
+                            // แสดงเฉพาะชื่อคนแรกใน Timeline หรือถ้ายังไม่มีก็ใช้ข้อความเตือน
+                            document.getElementById('timeline-senior-name').innerText = aliases[0];
+
+                            const contactMsg = document.getElementById('senior-contact-msg');
+                            if (contactMsg) {
+                                contactMsg.innerText = aliases.length > 1 ? "สายรหัส (มีพี่รหัส 2 คน)" : "สายรหัสทับหนึ่ง";
+                                contactMsg.classList.remove('text-danger');
+                            }
+
+                            document.getElementById('senior-container').classList.remove('d-none');
+                            document.getElementById('no-senior-view').classList.add('d-none');
+                        }
+                    });
                 });
             } else {
+                // กรณีไม่มีพี่รหัส
                 document.getElementById('timeline-senior-name').innerText = "รอลุ้น...";
                 document.getElementById('senior-container').classList.add('d-none');
                 document.getElementById('no-senior-view').classList.remove('d-none');
@@ -75,8 +103,7 @@ document.getElementById('btn-search').addEventListener('click', () => {
                 icon: 'error',
                 title: 'ไม่พบรหัสของคุณ',
                 html: 'รหัสไม่ถูกต้อง หรือยังไม่มีข้อมูลในระบบ <br>ติดต่อแอดมิน IG : not_kitti.pat',
-                confirmButtonColor: '#ef4444',
-                customClass: { popup: 'rounded-24' }
+                confirmButtonColor: '#ef4444'
             });
         }
     }, (error) => {
@@ -85,18 +112,19 @@ document.getElementById('btn-search').addEventListener('click', () => {
     });
 });
 
+// --- ฟังก์ชันอื่นๆ (openEditContact, updateJuniorContactUI) คงเดิมจากโค้ดที่คุณส่งมา ---
+// (ผมขอละไว้เพื่อความกระชับ แต่ในไฟล์จริงให้คงไว้ตามเดิมนะครับ)
+
 document.getElementById('student-id').addEventListener('keypress', (e) => {
     if (e.key === 'Enter') { document.getElementById('btn-search').click(); }
 });
 
-// --- แก้ไขฟังก์ชันตั้งค่าช่องทางติดต่อ (เวอร์ชันสมบูรณ์) ---
+// --- แก้ไขฟังก์ชันตั้งค่าช่องทางติดต่อ ---
 window.openEditContact = async function () {
-    // 1. ดึงข้อมูลล่าสุดจาก Firebase
     const juniorRef = ref(db, `juniors/${currentStudentId}`);
     const snapshot = await get(juniorRef);
     const currentData = snapshot.val() || {};
-    
-    // เช็คค่าเริ่มต้น
+
     let defaultType = currentData.instagram && currentData.instagram !== "" ? 'ig' : 'fb';
     let defaultValue = (defaultType === 'ig' ? currentData.instagram : currentData.facebook) || "";
 
@@ -119,7 +147,6 @@ window.openEditContact = async function () {
                         <option value="ig" ${defaultType === 'ig' ? 'selected' : ''}>🔴 Instagram</option>
                     </select>
                 </div>
-
                 <div id="input-area-wrapper">
                     <label id="input-label" style="display:block; font-size: 0.8rem; color: #94a3b8; margin-bottom: 8px;">
                         ${defaultType === 'fb' ? 'ลิงก์โปรไฟล์ Facebook:' : 'ชื่อผู้ใช้งาน Instagram:'}
@@ -136,7 +163,6 @@ window.openEditContact = async function () {
             </div>
         `,
         didOpen: () => {
-            // ดักจับการเปลี่ยนค่าใน Select ตรงๆ เมื่อ Modal เปิดขึ้นมา
             const selectEl = document.getElementById('contact-type-select');
             const icon = document.getElementById('platform-icon');
             const label = document.getElementById('input-label');
@@ -144,7 +170,7 @@ window.openEditContact = async function () {
 
             selectEl.addEventListener('change', (e) => {
                 const val = e.target.value;
-                if(val === 'fb') {
+                if (val === 'fb') {
                     icon.className = 'fab fa-facebook-f';
                     icon.style.color = '#1877F2';
                     label.innerText = 'ลิงก์โปรไฟล์ Facebook:';
@@ -171,15 +197,12 @@ window.openEditContact = async function () {
     if (formValues) {
         try {
             Swal.fire({ title: 'กำลังบันทึก...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
-
             const updates = {
                 facebook: formValues.type === 'fb' ? formValues.val : "",
                 instagram: formValues.type === 'ig' ? formValues.val : ""
             };
-
             await update(juniorRef, updates);
             updateJuniorContactUI(updates.facebook, updates.instagram);
-
             Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ!', timer: 1500, showConfirmButton: false, background: '#1e293b', color: '#fff' });
         } catch (error) {
             Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', background: '#1e293b' });
@@ -187,12 +210,10 @@ window.openEditContact = async function () {
     }
 };
 
-// --- Function อัปเดตช่องทางติดต่อของตัวเอง (น้องรหัส) ---
 function updateJuniorContactUI(fb, ig) {
     const fbRow = document.getElementById('my-fb-row');
     const igRow = document.getElementById('my-ig-row');
     const emptyState = document.getElementById('contact-empty-state');
-
     if (!fbRow || !igRow || !emptyState) return;
 
     const fbLink = document.getElementById('my-fb-link');
