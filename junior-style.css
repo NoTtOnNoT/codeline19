@@ -143,10 +143,30 @@ body {
 }
 
 .brand-icon {
-    font-size: 3.5rem;
-    color: #6366f1;
+    /* ปรับขนาดตามต้องการ */
+    width: 200px; 
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+    /* ใช้ filter เพื่อให้แสงฟุ้งตามขอบรูปภาพ (ไม่ใช่รูปสี่เหลี่ยม) */
     filter: drop-shadow(0 0 15px rgba(99, 102, 241, 0.6));
     animation: pulseIcon 2s infinite;
+}
+
+.brand-icon img {
+    width: 100%;
+    height: auto;
+    display: block;
+    /* ถ้าเป็นรูป PNG ที่มีพื้นหลังใส จะสวยมากครับ */
+}
+
+/* Animation ให้รูปขยับเบาๆ */
+@keyframes pulseIcon {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
 }
 
 .brand-glow {
@@ -154,26 +174,27 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 80px;
-    height: 80px;
-    background: var(--primary);
-    filter: blur(25px);
+    width: 50px;
+    height: 50px;
+    /* ใช้สีหลักของคุณ */
+    background: #ffffff; 
+    /* ปรับค่า blur ให้ฟุ้งตามใจชอบ */
+    filter: blur(35px); 
     opacity: 0.5;
     z-index: 1;
+    border-radius: 50%; /* แสงต้องเป็นวงกลมเพื่อให้ฟุ้งออกเท่ากันทุกทิศทาง */
     animation: pulse 3s infinite;
+    pointer-events: none; /* ป้องกันไม่ให้เผลอไปคลิกโดนแสงแทนรูป */
 }
 
 @keyframes pulse {
-
-    0%,
-    100% {
+    0%, 100% {
         opacity: 0.4;
         transform: translate(-50%, -50%) scale(1);
     }
-
     50% {
-        opacity: 0.7;
-        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 0.8;
+        transform: translate(-50%, -50%) scale(1.4);
     }
 }
 
@@ -237,7 +258,7 @@ p {
     background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
     color: white;
     font-weight: 600;
-    font-size: 1.1rem;
+    font-size: 0.8rem;
     cursor: pointer;
     overflow: hidden;
     transition: all 0.3s ease;

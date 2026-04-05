@@ -17,14 +17,8 @@ const db = getDatabase(app);
 
 let currentStudentId = "";
 
-// --- Event: เข้าสู่ระบบ / ค้นหาข้อมูล ---
-document.getElementById('btn-search').addEventListener('click', () => {
-    const myId = document.getElementById('student-id').value.trim();
-    if (!myId) {
-        Swal.fire({ icon: 'warning', title: 'กรุณากรอกรหัส', text: 'โปรดระบุรหัสนักเรียนของคุณ', confirmButtonColor: '#6366f1' });
-        return;
-    }
-
+// --- ฟังก์ชันหลัก: โหลดข้อมูลและเข้าสู่ระบบ ---
+function performLogin(myId) {
     currentStudentId = myId;
     Swal.showLoading();
 
@@ -32,6 +26,9 @@ document.getElementById('btn-search').addEventListener('click', () => {
 
     onValue(juniorRef, (snapshot) => {
         if (snapshot.exists()) {
+            // บันทึก ID ลงเครื่อง (ค้างการล็อกอิน)
+            localStorage.setItem('saved_junior_id', myId);
+            
             const myData = snapshot.val();
 
             document.getElementById('junior-name').innerText = myData.name;
@@ -40,7 +37,7 @@ document.getElementById('btn-search').addEventListener('click', () => {
 
             updateJuniorContactUI(myData.facebook || "", myData.instagram || "");
 
-            // --- ส่วนที่แก้ไข: รองรับพี่รหัสหลายคน (เช่น "101, 102") ---
+            // --- ส่วนพี่รหัส ---
             const seniorIdRaw = myData.senior_id ? myData.senior_id.toString() : "";
 
             if (seniorIdRaw && seniorIdRaw.trim() !== "") {
@@ -48,34 +45,23 @@ document.getElementById('btn-search').addEventListener('click', () => {
                 let aliases = [];
                 let loadedCount = 0;
 
-                // ล้างข้อมูลเก่าก่อนแสดงใหม่
                 document.getElementById('senior-alias').innerText = "กำลังดึงข้อมูล...";
 
-                // --- ส่วนที่แก้ไขใน Event 'btn-search' ฝั่งน้องรหัส ---
                 seniorIds.forEach((sId) => {
                     const seniorRef = ref(db, `students/${sId}`);
                     onValue(seniorRef, (seniorSnap) => {
                         loadedCount++;
                         if (seniorSnap.exists()) {
                             const sData = seniorSnap.val();
-                            // ตรวจสอบว่ามีฉายาไหม ถ้าไม่มีให้ใส่ข้อความเตือนแทน ID
-                            if (sData.alias && sData.alias.trim() !== "") {
-                                aliases.push(sData.alias);
-                            } else {
-                                aliases.push("พี่รหัสยังไม่ตั้งฉายา(กรุณาโวยวายในกลุ่ม)");
-                            }
+                            aliases.push(sData.alias && sData.alias.trim() !== "" ? sData.alias : "พี่รหัสยังไม่ตั้งฉายา");
                         } else {
-                            // กรณีหา ID นี้ในระบบไม่เจอ (ป้องกัน Error)
                             aliases.push("ไม่พบข้อมูลพี่รหัส");
                         }
 
                         if (loadedCount === seniorIds.length) {
-                            const fullAliasText = aliases.join(" & ");
-                            document.getElementById('senior-alias').innerText = fullAliasText;
-
-                            // แสดงเฉพาะชื่อคนแรกใน Timeline หรือถ้ายังไม่มีก็ใช้ข้อความเตือน
+                            document.getElementById('senior-alias').innerText = aliases.join(" & ");
                             document.getElementById('timeline-senior-name').innerText = aliases[0];
-
+                            
                             const contactMsg = document.getElementById('senior-contact-msg');
                             if (contactMsg) {
                                 contactMsg.innerText = aliases.length > 1 ? "สายรหัส (มีพี่รหัส 2 คน)" : "สายรหัสทับหนึ่ง";
@@ -88,17 +74,19 @@ document.getElementById('btn-search').addEventListener('click', () => {
                     });
                 });
             } else {
-                // กรณีไม่มีพี่รหัส
                 document.getElementById('timeline-senior-name').innerText = "รอลุ้น...";
                 document.getElementById('senior-container').classList.add('d-none');
                 document.getElementById('no-senior-view').classList.remove('d-none');
             }
 
+            // สลับหน้า
             document.getElementById('login-section').classList.add('d-none');
             document.getElementById('result-section').classList.remove('d-none');
             Swal.close();
 
         } else {
+            // กรณีไม่เจอข้อมูล (อาจโดนลบจาก DB) ให้ล้างค่าที่เซฟไว้ด้วย
+            localStorage.removeItem('saved_junior_id');
             Swal.fire({
                 icon: 'error',
                 title: 'ไม่พบรหัสของคุณ',
@@ -110,106 +98,33 @@ document.getElementById('btn-search').addEventListener('click', () => {
         console.error(error);
         Swal.fire('Error', 'ไม่สามารถเชื่อมต่อฐานข้อมูลได้', 'error');
     });
-});
+}
 
-// --- ฟังก์ชันอื่นๆ (openEditContact, updateJuniorContactUI) คงเดิมจากโค้ดที่คุณส่งมา ---
-// (ผมขอละไว้เพื่อความกระชับ แต่ในไฟล์จริงให้คงไว้ตามเดิมนะครับ)
-
-document.getElementById('student-id').addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') { document.getElementById('btn-search').click(); }
-});
-
-// --- แก้ไขฟังก์ชันตั้งค่าช่องทางติดต่อ ---
-window.openEditContact = async function () {
-    const juniorRef = ref(db, `juniors/${currentStudentId}`);
-    const snapshot = await get(juniorRef);
-    const currentData = snapshot.val() || {};
-
-    let defaultType = currentData.instagram && currentData.instagram !== "" ? 'ig' : 'fb';
-    let defaultValue = (defaultType === 'ig' ? currentData.instagram : currentData.facebook) || "";
-
-    const { value: formValues } = await Swal.fire({
-        title: '🌐 ช่องทางติดต่อ',
-        background: '#1e293b',
-        color: '#f8fafc',
-        showCancelButton: true,
-        confirmButtonText: '<i class="fas fa-save me-2"></i> บันทึกข้อมูล',
-        cancelButtonText: 'ยกเลิก',
-        confirmButtonColor: '#6366f1',
-        cancelButtonColor: 'transparent',
-        html: `
-            <div style="text-align: left; font-family: 'Kanit', sans-serif;">
-                <div style="margin-bottom: 20px;">
-                    <label style="display:block; font-size: 0.8rem; color: #94a3b8; margin-bottom: 8px;">เลือกแพลตฟอร์ม:</label>
-                    <select id="contact-type-select" 
-                        style="width: 100%; padding: 15px; background: #0f172a; color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; font-family: 'Kanit'; cursor: pointer;">
-                        <option value="fb" ${defaultType === 'fb' ? 'selected' : ''}>🔵 Facebook</option>
-                        <option value="ig" ${defaultType === 'ig' ? 'selected' : ''}>🔴 Instagram</option>
-                    </select>
-                </div>
-                <div id="input-area-wrapper">
-                    <label id="input-label" style="display:block; font-size: 0.8rem; color: #94a3b8; margin-bottom: 8px;">
-                        ${defaultType === 'fb' ? 'ลิงก์โปรไฟล์ Facebook:' : 'ชื่อผู้ใช้งาน Instagram:'}
-                    </label>
-                    <div style="position: relative; display: flex; align-items: center;">
-                        <i id="platform-icon" class="${defaultType === 'fb' ? 'fab fa-facebook-f' : 'fab fa-instagram'}" 
-                           style="position: absolute; left: 20px; color: ${defaultType === 'fb' ? '#1877F2' : '#E1306C'}; font-size: 1.2rem;"></i>
-                        <input id="swal-input-val" class="swal2-input" 
-                               value="${defaultValue}"
-                               placeholder="${defaultType === 'fb' ? 'https://www.facebook.com/...' : '@your.ig.name'}" 
-                               style="width: 100%; margin: 0; background: rgba(0,0,0,0.2); color: white; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); padding-left: 50px;">
-                    </div>
-                </div>
-            </div>
-        `,
-        didOpen: () => {
-            const selectEl = document.getElementById('contact-type-select');
-            const icon = document.getElementById('platform-icon');
-            const label = document.getElementById('input-label');
-            const input = document.getElementById('swal-input-val');
-
-            selectEl.addEventListener('change', (e) => {
-                const val = e.target.value;
-                if (val === 'fb') {
-                    icon.className = 'fab fa-facebook-f';
-                    icon.style.color = '#1877F2';
-                    label.innerText = 'ลิงก์โปรไฟล์ Facebook:';
-                    input.placeholder = 'https://www.facebook.com/yourprofile';
-                } else {
-                    icon.className = 'fab fa-instagram';
-                    icon.style.color = '#E1306C';
-                    label.innerText = 'ชื่อผู้ใช้งาน Instagram:';
-                    input.placeholder = '@your.ig.name หรือลิงก์โปรไฟล์';
-                }
-            });
-        },
-        preConfirm: () => {
-            const type = document.getElementById('contact-type-select').value;
-            const val = document.getElementById('swal-input-val').value.trim();
-            if (!val) {
-                Swal.showValidationMessage('กรุณากรอกข้อมูลติดต่อ');
-                return false;
-            }
-            return { type, val };
-        }
-    });
-
-    if (formValues) {
-        try {
-            Swal.fire({ title: 'กำลังบันทึก...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
-            const updates = {
-                facebook: formValues.type === 'fb' ? formValues.val : "",
-                instagram: formValues.type === 'ig' ? formValues.val : ""
-            };
-            await update(juniorRef, updates);
-            updateJuniorContactUI(updates.facebook, updates.instagram);
-            Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ!', timer: 1500, showConfirmButton: false, background: '#1e293b', color: '#fff' });
-        } catch (error) {
-            Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', background: '#1e293b' });
-        }
+// --- ตรวจสอบ Auto Login เมื่อเปิดเว็บ ---
+window.addEventListener('load', () => {
+    const savedId = localStorage.getItem('saved_junior_id');
+    if (savedId) {
+        performLogin(savedId);
     }
+});
+
+// --- Event: ปุ่มกดเข้าสู่ระบบ ---
+document.getElementById('btn-search').addEventListener('click', () => {
+    const myId = document.getElementById('student-id').value.trim();
+    if (!myId) {
+        Swal.fire({ icon: 'warning', title: 'กรุณากรอกรหัส', text: 'โปรดระบุรหัสนักเรียนของคุณ', confirmButtonColor: '#6366f1' });
+        return;
+    }
+    performLogin(myId);
+});
+
+// --- ออกจากระบบ (Logout) ---
+window.logout = function() {
+    localStorage.removeItem('saved_junior_id'); // ลบข้อมูลที่จำไว้
+    location.reload(); // รีโหลดเพื่อกลับหน้า Login
 };
 
+// --- แก้ไขช่องทางติดต่อ (UI) ---
 function updateJuniorContactUI(fb, ig) {
     const fbRow = document.getElementById('my-fb-row');
     const igRow = document.getElementById('my-ig-row');
@@ -241,25 +156,101 @@ function updateJuniorContactUI(fb, ig) {
     }
 }
 
+// --- ฟังก์ชันแก้ไขข้อมูลติดต่อ (Swal) ---
+window.openEditContact = async function () {
+    const juniorRef = ref(db, `juniors/${currentStudentId}`);
+    const snapshot = await get(juniorRef);
+    const currentData = snapshot.val() || {};
 
-// ประกาศฟังก์ชันให้เป็น Global เพื่อให้ HTML มองเห็น
+    let defaultType = currentData.instagram && currentData.instagram !== "" ? 'ig' : 'fb';
+    let defaultValue = (defaultType === 'ig' ? currentData.instagram : currentData.facebook) || "";
+
+    const { value: formValues } = await Swal.fire({
+        title: '🌐 ช่องทางติดต่อ',
+        background: '#1e293b',
+        color: '#f8fafc',
+        showCancelButton: true,
+        confirmButtonText: '<i class="fas fa-save me-2"></i> บันทึกข้อมูล',
+        cancelButtonText: 'ยกเลิก',
+        confirmButtonColor: '#6366f1',
+        cancelButtonColor: 'transparent',
+        html: `
+            <div style="text-align: left; font-family: 'Kanit', sans-serif;">
+                <div style="margin-bottom: 20px;">
+                    <label style="display:block; font-size: 0.8rem; color: #94a3b8; margin-bottom: 8px;">เลือกแพลตฟอร์ม:</label>
+                    <select id="contact-type-select" style="width: 100%; padding: 15px; background: #0f172a; color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; font-family: 'Kanit'; cursor: pointer;">
+                        <option value="fb" ${defaultType === 'fb' ? 'selected' : ''}>🔵 Facebook</option>
+                        <option value="ig" ${defaultType === 'ig' ? 'selected' : ''}>🔴 Instagram</option>
+                    </select>
+                </div>
+                <div id="input-area-wrapper">
+                    <label id="input-label" style="display:block; font-size: 0.8rem; color: #94a3b8; margin-bottom: 8px;">
+                        ${defaultType === 'fb' ? 'ลิงก์โปรไฟล์ Facebook:' : 'ชื่อผู้ใช้งาน Instagram:'}
+                    </label>
+                    <div style="position: relative; display: flex; align-items: center;">
+                        <i id="platform-icon" class="${defaultType === 'fb' ? 'fab fa-facebook-f' : 'fab fa-instagram'}" 
+                           style="position: absolute; left: 20px; color: ${defaultType === 'fb' ? '#1877F2' : '#E1306C'}; font-size: 1.2rem;"></i>
+                        <input id="swal-input-val" class="swal2-input" value="${defaultValue}" placeholder="${defaultType === 'fb' ? 'https://www.facebook.com/...' : '@your.ig.name'}" 
+                               style="width: 100%; margin: 0; background: rgba(0,0,0,0.2); color: white; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); padding-left: 50px;">
+                    </div>
+                </div>
+            </div>
+        `,
+        didOpen: () => {
+            const selectEl = document.getElementById('contact-type-select');
+            const icon = document.getElementById('platform-icon');
+            const label = document.getElementById('input-label');
+            const input = document.getElementById('swal-input-val');
+            selectEl.addEventListener('change', (e) => {
+                const val = e.target.value;
+                if (val === 'fb') {
+                    icon.className = 'fab fa-facebook-f'; icon.style.color = '#1877F2';
+                    label.innerText = 'ลิงก์โปรไฟล์ Facebook:'; input.placeholder = 'https://www.facebook.com/yourprofile';
+                } else {
+                    icon.className = 'fab fa-instagram'; icon.style.color = '#E1306C';
+                    label.innerText = 'ชื่อผู้ใช้งาน Instagram:'; input.placeholder = '@your.ig.name หรือลิงก์โปรไฟล์';
+                }
+            });
+        },
+        preConfirm: () => {
+            const type = document.getElementById('contact-type-select').value;
+            const val = document.getElementById('swal-input-val').value.trim();
+            if (!val) { Swal.showValidationMessage('กรุณากรอกข้อมูลติดต่อ'); return false; }
+            return { type, val };
+        }
+    });
+
+    if (formValues) {
+        try {
+            Swal.fire({ title: 'กำลังบันทึก...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+            const updates = {
+                facebook: formValues.type === 'fb' ? formValues.val : "",
+                instagram: formValues.type === 'ig' ? formValues.val : ""
+            };
+            await update(juniorRef, updates);
+            updateJuniorContactUI(updates.facebook, updates.instagram);
+            Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ!', timer: 1500, showConfirmButton: false, background: '#1e293b', color: '#fff' });
+        } catch (error) {
+            Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', background: '#1e293b' });
+        }
+    }
+};
+
+// --- อื่นๆ ---
+document.getElementById('student-id').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') { document.getElementById('btn-search').click(); }
+});
+
 window.triggerJumpscare = function () {
-    console.log("Jumpscare system: Activated");
     const overlay = document.getElementById('jumpscare-overlay');
-
     if (overlay) {
-        // แสดงหน้าจอ Jumpscare
         overlay.style.display = 'flex';
         overlay.classList.add('active-jumpscare');
-        document.body.style.overflow = 'hidden'; // กันการไถหน้าจอหนี
-
-        // หายไปเองหลังจาก 2 วินาที
+        document.body.style.overflow = 'hidden';
         setTimeout(() => {
             overlay.style.display = 'none';
             overlay.classList.remove('active-jumpscare');
             document.body.style.overflow = 'auto';
         }, 2000);
-    } else {
-        console.error("Error: ไม่พบ Element id='jumpscare-overlay'");
     }
 };
